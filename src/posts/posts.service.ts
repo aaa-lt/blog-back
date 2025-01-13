@@ -4,6 +4,7 @@ import { UpdatePostDto } from './dto/update-post.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import Post from './entities/post.entity';
 import { Repository } from 'typeorm';
+import { PostgresErrorCode } from 'src/database/postgresErrorCodes.enum';
 
 @Injectable()
 export class PostsService {
@@ -12,11 +13,18 @@ export class PostsService {
   ) {}
 
   async create(createPostDto: CreatePostDto) {
-    const newPost = this.postRepository.create(createPostDto);
+    try {
+      const newPost = this.postRepository.create(createPostDto);
 
-    await this.postRepository.save(newPost);
+      await this.postRepository.save(newPost);
 
-    return newPost;
+      return newPost;
+    } catch (error) {
+      if (error?.code === PostgresErrorCode.UniqueViolation) {
+        throw new HttpException('Post with this path already exists', 400);
+      }
+      throw new HttpException('Something went wrong', 500);
+    }
   }
 
   async findAll() {
@@ -44,14 +52,21 @@ export class PostsService {
   }
 
   async update(id: string, updatePostDto: UpdatePostDto) {
-    await this.postRepository.update(id, updatePostDto);
-    const updatedPost = await this.postRepository.findOne({ where: { id } });
+    try {
+      await this.postRepository.update(id, updatePostDto);
+      const updatedPost = await this.postRepository.findOne({ where: { id } });
 
-    if (updatedPost) {
-      return updatedPost;
+      if (updatedPost) {
+        return updatedPost;
+      }
+
+      throw new HttpException('Post not found', 404);
+    } catch (error) {
+      if (error?.code === PostgresErrorCode.UniqueViolation) {
+        throw new HttpException('Post with this path already exists', 400);
+      }
+      throw new HttpException('Something went wrong', 500);
     }
-
-    throw new HttpException('Post not found', 404);
   }
 
   async remove(id: string) {
