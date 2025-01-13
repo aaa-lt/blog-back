@@ -10,6 +10,7 @@ import {
 import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
+import { FindOneByUuidDto } from './dto/find-one-by-uuid.dto';
 
 @Controller('posts')
 export class PostsController {
@@ -25,18 +26,21 @@ export class PostsController {
     return this.postsService.findAll();
   }
 
-  @Get(':id')
-  async findOne(@Param('id') id: string) {
-    return this.postsService.findOne(id);
+  @Get(':path')
+  async findOne(@Param('path') path: string) {
+    return this.postsService.findOne(path);
   }
 
   @Patch(':id')
-  async update(@Param('id') id: string, @Body() updatePostDto: UpdatePostDto) {
+  async update(
+    @Param() { id }: FindOneByUuidDto,
+    @Body() updatePostDto: UpdatePostDto,
+  ) {
     return this.postsService.update(id, updatePostDto);
   }
 
   @Delete(':id')
-  async remove(@Param('id') id: string) {
+  async remove(@Param() { id }: FindOneByUuidDto) {
     return this.postsService.remove(id);
   }
 }

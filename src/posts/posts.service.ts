@@ -20,7 +20,9 @@ export class PostsService {
   }
 
   async findAll() {
-    const posts = await this.postRepository.find();
+    const posts = await this.postRepository.find({
+      where: { published: true },
+    });
 
     if (posts) {
       return posts;
@@ -29,8 +31,10 @@ export class PostsService {
     throw new HttpException('Posts not found', 404);
   }
 
-  async findOne(id: string) {
-    const post = await this.postRepository.findOne({ where: { id } });
+  async findOne(path: string) {
+    const post = await this.postRepository.findOne({
+      where: { postPath: path },
+    });
 
     if (post) {
       return post;

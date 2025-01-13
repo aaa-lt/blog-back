@@ -1,3 +1,4 @@
+import { Transform } from 'class-transformer';
 import {
   Column,
   CreateDateColumn,
@@ -21,7 +22,12 @@ class Post {
   public previewContent: string;
 
   @Column({ nullable: true })
-  public imageUrl: string;
+  @Transform(({ value }) => {
+    if (value !== null) {
+      return value;
+    }
+  })
+  public imageUrl?: string;
 
   @CreateDateColumn()
   public createdAt: Date;
@@ -35,7 +41,7 @@ class Post {
   @Column()
   public published: boolean;
 
-  @Column()
+  @Column({ unique: true })
   public postPath: string;
 }
 
