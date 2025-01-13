@@ -1,28 +1,40 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @Entity()
 class Post {
-  @PrimaryGeneratedColumn()
-  public id: number;
+  @PrimaryGeneratedColumn('uuid')
+  public id: string;
 
   @Column()
   public title: string;
 
-  @Column()
+  @Column({ default: 'Hello world!' })
   public content: string;
 
-  @Column()
+  @Column({ default: 'Hello world!' })
   public previewContent: string;
-  @Column()
+
+  @Column({ nullable: true })
   public imageUrl: string;
-  @Column()
+
+  @CreateDateColumn()
   public createdAt: Date;
-  @Column()
+
+  @UpdateDateColumn()
   public updatedAt: Date;
+
   @Column()
   public seriesId: number;
+
   @Column()
   public published: boolean;
+
   @Column()
   public postPath: string;
 }
