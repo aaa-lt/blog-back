@@ -36,19 +36,32 @@ The backend is responsible for managing the blog data, including posts, series, 
 
 ### Tables
 
-1. **Post**
+1. **Posts**
 
    - `id`: Primary key
    - `title`: String
    - `content`: Text (Markdown)
+   - `previewContent`: Text
    - `imageUrl`: String
    - `createdAt`: DateTime
    - `updatedAt`: DateTime
-   - `seriesId`: Foreign key linking to `Series`
+   - `seriesId`: Post id in series
+   - `published`: Boolean
+   - `postPath`: String
 
 2. **Series**
+
    - `id`: Primary key
    - `title`: String
+   - `description`: Text
+   - `imageUrl`: String
+   - `createdAt`: DateTime
+   - `updatedAt`: DateTime
+
+3. **SeriesPost**
+   - `id`: Primary key
+   - `postId`: Foreign key linking to `Posts`
+   - `seriesId`: Foreign key linking to `Series`
    - `description`: Text
    - `imageUrl`: String
    - `createdAt`: DateTime
@@ -61,11 +74,21 @@ The backend is responsible for managing the blog data, including posts, series, 
 
 - `GET /posts`: Fetch all posts with pagination and sorting.
 - `GET /posts/:id`: Fetch a specific post by ID.
+- `POST /posts`: Create a new post
+- `PATCH /posts/:id`: Modify the post
+- `DELETE /posts/:id`: Delete the post
 
 ### Series API
 
 - `GET /series`: Fetch all series.
 - `GET /series/:id`: Fetch a series and its associated posts.
+- `POST /series`: Create a new series
+- `PATCH /series/:id`: Modify the series
+- `DELETE /series/:id`: Delete the series
+
+### Admin API
+
+- `GET /admin`: Fetch all drafts
 
 ---
 
@@ -89,6 +112,9 @@ The backend is responsible for managing the blog data, including posts, series, 
 
 - [ ] Create `GET /posts` endpoint.
 - [ ] Add pagination and sorting for posts.
+  - [ ] `/posts/?page`
+  - [ ] `/posts/?limit`
+  - [ ] `/posts/?sortBy`
 - [ ] Create `GET /posts/:id` endpoint.
 
 #### Series API
