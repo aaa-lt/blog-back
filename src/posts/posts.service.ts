@@ -6,6 +6,7 @@ import Post from './entities/post.entity';
 import { Repository } from 'typeorm';
 import { PostgresErrorCode } from 'src/database/postgresErrorCodes.enum';
 import { PostNotFoundException } from './exception/postNotFound.exception';
+import { Order } from 'src/shared/dto/sort-order-param.dto';
 
 @Injectable()
 export class PostsService {
@@ -28,15 +29,18 @@ export class PostsService {
     }
   }
 
-  async getAllPosts(offset?: number, limit?: number) {
+  async getAllPosts(limit: number, offset?: number, order?: Order) {
     const [items, count] = await this.postRepository.findAndCount({
       where: { published: true },
       take: limit,
       skip: offset,
+      order: {
+        createdAt: order,
+      },
     });
 
     if (items) {
-      return { items, count };
+      return { items, pagination: { count, offset, limit } };
     }
 
     throw new HttpException('Posts not found', 404);

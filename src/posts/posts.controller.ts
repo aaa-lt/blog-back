@@ -13,6 +13,7 @@ import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { FindOneByUuidDto } from '../shared/dto/find-one-by-uuid.dto';
 import { PaginationParamsDto } from '../shared/dto/pagination-params.dto';
+import { OrderSortParamDto } from 'src/shared/dto/sort-order-param.dto';
 
 @Controller('posts')
 export class PostsController {
@@ -24,8 +25,11 @@ export class PostsController {
   }
 
   @Get()
-  async getPosts(@Query() { offset, limit }: PaginationParamsDto) {
-    return this.postsService.getAllPosts(offset, limit);
+  async getPosts(
+    @Query() { offset, limit }: PaginationParamsDto,
+    @Query() { order }: OrderSortParamDto,
+  ) {
+    return this.postsService.getAllPosts(limit, offset, order);
   }
 
   @Get(':path')
