@@ -12,7 +12,7 @@ export class PostsService {
     @InjectRepository(Post) private postRepository: Repository<Post>,
   ) {}
 
-  async create(createPostDto: CreatePostDto) {
+  async createPost(createPostDto: CreatePostDto) {
     try {
       const newPost = this.postRepository.create(createPostDto);
 
@@ -27,19 +27,21 @@ export class PostsService {
     }
   }
 
-  async findAll() {
-    const posts = await this.postRepository.find({
+  async getAllPosts(offset?: number, limit?: number) {
+    const [items, count] = await this.postRepository.findAndCount({
       where: { published: true },
+      take: limit,
+      skip: offset,
     });
 
-    if (posts) {
-      return posts;
+    if (items) {
+      return { items, count };
     }
 
     throw new HttpException('Posts not found', 404);
   }
 
-  async findOne(path: string) {
+  async getPost(path: string) {
     const post = await this.postRepository.findOne({
       where: { postPath: path },
     });
@@ -51,7 +53,7 @@ export class PostsService {
     throw new HttpException('Post not found', 404);
   }
 
-  async update(id: string, updatePostDto: UpdatePostDto) {
+  async updatePost(id: string, updatePostDto: UpdatePostDto) {
     try {
       await this.postRepository.update(id, updatePostDto);
       const updatedPost = await this.postRepository.findOne({ where: { id } });
@@ -59,17 +61,17 @@ export class PostsService {
       if (updatedPost) {
         return updatedPost;
       }
-
-      throw new HttpException('Post not found', 404);
     } catch (error) {
       if (error?.code === PostgresErrorCode.UniqueViolation) {
         throw new HttpException('Post with this path already exists', 400);
       }
       throw new HttpException('Something went wrong', 500);
     }
+
+    throw new HttpException('Post not found', 404);
   }
 
-  async remove(id: string) {
+  async removePost(id: string) {
     const deleteResponse = await this.postRepository.delete(id);
 
     if (!deleteResponse.affected) {

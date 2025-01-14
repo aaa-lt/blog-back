@@ -1,9 +1,10 @@
 import {
   IsBoolean,
+  IsInt,
   IsNotEmpty,
-  IsNumber,
   IsOptional,
   IsString,
+  Min,
 } from 'class-validator';
 
 export class CreatePostDto {
@@ -23,8 +24,9 @@ export class CreatePostDto {
   @IsOptional()
   imageUrl?: string;
 
-  @IsNumber()
+  @IsInt()
   @IsNotEmpty()
+  @Min(1)
   seriesId: number;
 
   @IsBoolean()

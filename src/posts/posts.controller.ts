@@ -6,41 +6,43 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { FindOneByUuidDto } from './dto/find-one-by-uuid.dto';
+import { PaginationParamsDto } from './dto/pagination-params.dto';
 
 @Controller('posts')
 export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
   @Post()
-  async create(@Body() createPostDto: CreatePostDto) {
-    return this.postsService.create(createPostDto);
+  async createPost(@Body() createPostDto: CreatePostDto) {
+    return this.postsService.createPost(createPostDto);
   }
 
   @Get()
-  async findAll() {
-    return this.postsService.findAll();
+  async getPosts(@Query() { offset, limit }: PaginationParamsDto) {
+    return this.postsService.getAllPosts(offset, limit);
   }
 
   @Get(':path')
-  async findOne(@Param('path') path: string) {
-    return this.postsService.findOne(path);
+  async getPost(@Param('path') path: string) {
+    return this.postsService.getPost(path);
   }
 
   @Patch(':id')
-  async update(
+  async updatePost(
     @Param() { id }: FindOneByUuidDto,
     @Body() updatePostDto: UpdatePostDto,
   ) {
-    return this.postsService.update(id, updatePostDto);
+    return this.postsService.updatePost(id, updatePostDto);
   }
 
   @Delete(':id')
-  async remove(@Param() { id }: FindOneByUuidDto) {
-    return this.postsService.remove(id);
+  async removePost(@Param() { id }: FindOneByUuidDto) {
+    return this.postsService.removePost(id);
   }
 }
