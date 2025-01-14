@@ -6,6 +6,7 @@ import {
   IsString,
   Min,
 } from 'class-validator';
+import Series from 'src/series/entities/series.entity';
 
 export class CreatePostDto {
   @IsString()
@@ -27,7 +28,7 @@ export class CreatePostDto {
   @IsInt()
   @IsNotEmpty()
   @Min(1)
-  seriesId: number;
+  seriesPostId: number;
 
   @IsBoolean()
   @IsNotEmpty()
@@ -35,5 +36,7 @@ export class CreatePostDto {
 
   @IsString()
   @IsNotEmpty()
-  postPath: string;
+  path: string;
+
+  series: Series;
 }

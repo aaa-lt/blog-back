@@ -11,8 +11,8 @@ import {
 import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/create-post.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
-import { FindOneByUuidDto } from './dto/find-one-by-uuid.dto';
-import { PaginationParamsDto } from './dto/pagination-params.dto';
+import { FindOneByUuidDto } from '../shared/dto/find-one-by-uuid.dto';
+import { PaginationParamsDto } from '../shared/dto/pagination-params.dto';
 
 @Controller('posts')
 export class PostsController {

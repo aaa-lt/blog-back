@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import Post from './entities/post.entity';
 import { Repository } from 'typeorm';
 import { PostgresErrorCode } from 'src/database/postgresErrorCodes.enum';
+import { PostNotFoundException } from './exception/postNotFound.exception';
 
 @Injectable()
 export class PostsService {
@@ -43,7 +44,7 @@ export class PostsService {
 
   async getPost(path: string) {
     const post = await this.postRepository.findOne({
-      where: { postPath: path },
+      where: { path },
     });
 
     if (post) {
@@ -54,21 +55,25 @@ export class PostsService {
   }
 
   async updatePost(id: string, updatePostDto: UpdatePostDto) {
+    const post = await this.postRepository.findOne({
+      where: { id },
+    });
+
+    if (!post) {
+      throw new HttpException('Post not found', 404);
+    }
+
     try {
       await this.postRepository.update(id, updatePostDto);
-      const updatedPost = await this.postRepository.findOne({ where: { id } });
-
-      if (updatedPost) {
-        return updatedPost;
-      }
+      return await this.postRepository.findOne({
+        where: { id },
+      });
     } catch (error) {
       if (error?.code === PostgresErrorCode.UniqueViolation) {
-        throw new HttpException('Post with this path already exists', 400);
+        throw new PostNotFoundException(id);
       }
       throw new HttpException('Something went wrong', 500);
     }
-
-    throw new HttpException('Post not found', 404);
   }
 
   async removePost(id: string) {

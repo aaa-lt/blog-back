@@ -1,16 +1,16 @@
 import { Transform } from 'class-transformer';
-import Series from 'src/series/entities/series.entity';
+import Post from 'src/posts/entities/post.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
-  ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
 @Entity()
-class Post {
+class Series {
   @PrimaryGeneratedColumn('uuid')
   public id: string;
 
@@ -18,10 +18,7 @@ class Post {
   public title: string;
 
   @Column({ default: 'Hello world!' })
-  public content: string;
-
-  @Column({ default: 'Hello world!' })
-  public previewContent: string;
+  public description: string;
 
   @Column({ nullable: true })
   @Transform(({ value }) => {
@@ -37,17 +34,11 @@ class Post {
   @UpdateDateColumn()
   public updatedAt: Date;
 
-  @Column()
-  public seriesPostId: number;
-
-  @Column()
-  public published: boolean;
-
   @Column({ unique: true })
   public path: string;
 
-  @ManyToOne(() => Series, (series) => series.posts)
-  public series: Series;
+  @OneToMany(() => Post, (post) => post.series)
+  public posts: Post[];
 }
 
-export default Post;
+export default Series;
