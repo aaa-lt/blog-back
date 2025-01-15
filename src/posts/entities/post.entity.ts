@@ -1,4 +1,4 @@
-import { Transform } from 'class-transformer';
+import { Exclude } from 'class-transformer';
 import Series from 'src/series/entities/series.entity';
 import {
   Column,
@@ -12,29 +12,28 @@ import {
 @Entity()
 class Post {
   @PrimaryGeneratedColumn('uuid')
+  @Exclude()
   public id: string;
 
   @Column()
   public title: string;
 
   @Column({ default: 'Hello world!' })
+  @Exclude()
   public content: string;
 
   @Column({ default: 'Hello world!' })
   public previewContent: string;
 
   @Column({ nullable: true })
-  @Transform(({ value }) => {
-    if (value !== null) {
-      return value;
-    }
-  })
   public imageUrl?: string;
 
   @CreateDateColumn()
+  @Exclude()
   public createdAt: Date;
 
   @UpdateDateColumn()
+  @Exclude()
   public updatedAt: Date;
 
   @Column()
