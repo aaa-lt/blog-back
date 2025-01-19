@@ -30,7 +30,14 @@ export class SeriesService {
 
   async getAllSeries(offset?: number, limit?: number) {
     const [items, count] = await this.seriesRepository.findAndCount({
-      relations: ['posts'],
+      select: {
+        title: true,
+        path: true,
+        createdAt: true,
+      },
+      order: {
+        createdAt: 'DESC',
+      },
       take: limit,
       skip: offset,
     });
@@ -44,8 +51,9 @@ export class SeriesService {
 
   async getSeries(path: string) {
     const series = await this.seriesRepository.findOne({
-      relations: ['posts'],
-      where: { path },
+      where: {
+        path,
+      },
     });
 
     if (series) {

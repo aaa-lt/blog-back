@@ -1,4 +1,3 @@
-import { Transform } from 'class-transformer';
 import Post from 'src/posts/entities/post.entity';
 import {
   Column,
@@ -21,11 +20,6 @@ class Series {
   public description: string;
 
   @Column({ nullable: true })
-  @Transform(({ value }) => {
-    if (value !== null) {
-      return value;
-    }
-  })
   public imageUrl?: string;
 
   @CreateDateColumn()
