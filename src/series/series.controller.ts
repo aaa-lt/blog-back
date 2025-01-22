@@ -16,16 +16,12 @@ import { UpdateSeriesDto } from './dto/update-series.dto';
 import { PaginationParamsDto } from 'src/shared/dto/pagination-params.dto';
 import { FindOneByUuidDto } from 'src/shared/dto/find-one-by-uuid.dto';
 import { ExcludeNullInterceptor } from 'src/utils/excludeNull.interceptor';
-import { PostsService } from 'src/posts/posts.service';
 
 @Controller('series')
 @UseInterceptors(ClassSerializerInterceptor)
 @UseInterceptors(ExcludeNullInterceptor)
 export class SeriesController {
-  constructor(
-    private readonly seriesService: SeriesService,
-    private readonly postsService: PostsService,
-  ) {}
+  constructor(private readonly seriesService: SeriesService) {}
 
   @Post()
   create(@Body() createSeriesDto: CreateSeriesDto) {
@@ -38,17 +34,9 @@ export class SeriesController {
   }
 
   @Get(':path')
-  async findOne(
-    @Param('path') path: string,
-    @Query() { offset, limit }: PaginationParamsDto,
-  ) {
+  async findOne(@Param('path') path: string) {
     const series = await this.seriesService.getSeries(path);
-    const posts = await this.postsService.getPostsBySeriesId(
-      series.id,
-      limit,
-      offset,
-    );
-    return { series, posts };
+    return { series };
   }
 
   @Patch(':id')

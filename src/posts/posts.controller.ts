@@ -17,6 +17,7 @@ import { FindOneByUuidDto } from '../shared/dto/find-one-by-uuid.dto';
 import { PaginationParamsDto } from '../shared/dto/pagination-params.dto';
 import { OrderSortParamDto } from 'src/shared/dto/sort-order-param.dto';
 import { ExcludeNullInterceptor } from 'src/utils/excludeNull.interceptor';
+import { GetPostDto } from './dto/get-post.dto';
 
 @Controller('posts')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -33,8 +34,9 @@ export class PostsController {
   async getPosts(
     @Query() { offset, limit }: PaginationParamsDto,
     @Query() { order }: OrderSortParamDto,
+    @Query() { seriesPath }: GetPostDto,  
   ) {
-    return this.postsService.getAllPosts(limit, offset, order);
+    return this.postsService.getAllPosts(limit, offset, order, seriesPath);
   }
 
   @Get(':path')

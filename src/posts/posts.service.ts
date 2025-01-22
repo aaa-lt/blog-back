@@ -29,9 +29,14 @@ export class PostsService {
     }
   }
 
-  async getAllPosts(limit: number, offset?: number, order?: Order) {
+  async getAllPosts(
+    limit: number,
+    offset?: number,
+    order?: Order,
+    seriesPath?: string,
+  ) {
     const [items, count] = await this.postRepository.findAndCount({
-      where: { published: true },
+      where: { published: true, series: { path: seriesPath } },
       relations: ['series'],
       select: {
         id: true,
@@ -44,6 +49,7 @@ export class PostsService {
         series: {
           id: true,
           title: true,
+          path: true,
         },
       },
       take: limit,
@@ -62,7 +68,22 @@ export class PostsService {
 
   async getPost(path: string) {
     const post = await this.postRepository.findOne({
-      where: { path },
+      where: { path, published: true },
+      relations: ['series'],
+      select: {
+        id: true,
+        title: true,
+        content: true,
+        imageUrl: true,
+        path: true,
+        seriesPostId: true,
+        createdAt: true,
+        series: {
+          id: true,
+          title: true,
+          path: true,
+        },
+      },
     });
 
     if (post) {
@@ -70,27 +91,6 @@ export class PostsService {
     }
 
     throw new HttpException('Post not found', 404);
-  }
-
-  async getPostsBySeriesId(seriesId: string, limit: number, offset?: number) {
-    const [items, total] = await this.postRepository.findAndCount({
-      where: { series: { id: seriesId }, published: true },
-      select: {
-        id: true,
-        title: true,
-        imageUrl: true,
-        previewContent: true,
-        path: true,
-        seriesPostId: true,
-      },
-      order: {
-        seriesPostId: 'DESC',
-      },
-      take: limit,
-      skip: offset,
-    });
-
-    return { items, total };
   }
 
   async updatePost(id: string, updatePostDto: UpdatePostDto) {
