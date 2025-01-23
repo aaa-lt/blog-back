@@ -25,6 +25,8 @@ async function bootstrap() {
   const options = {
     explorer: true,
     customCss: theme.getBuffer(SwaggerThemeNameEnum.ONE_DARK),
+    customJs: '/swagger-custom.js',
+    swaggerOptions: { persistAuthorization: true },
   };
 
   SwaggerModule.setup('api', app, document, options);

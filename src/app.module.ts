@@ -6,6 +6,8 @@ import { SeriesModule } from './series/series.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import * as Joi from '@hapi/joi';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'node:path';
 
 @Module({
   imports: [
@@ -28,6 +30,12 @@ import * as Joi from '@hapi/joi';
     SeriesModule,
     UsersModule,
     AuthModule,
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'src/public'),
+      serveStaticOptions: {
+        index: false,
+      },
+    }),
   ],
 })
 export class AppModule {}
