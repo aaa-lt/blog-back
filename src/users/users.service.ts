@@ -30,6 +30,18 @@ export class UsersService {
     throw new HttpException('User not found', 404);
   }
 
+  async getById(id: string) {
+    const user = await this.userRepository.findOne({
+      where: { id },
+    });
+
+    if (user) {
+      return user;
+    }
+
+    throw new HttpException('User not found', 404);
+  }
+
   // TODO
   // async update(id: string, updateUserDto: UpdateUserDto) {
   //   console.log(updateUserDto);

@@ -5,7 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import Post from './entities/post.entity';
 import { Repository } from 'typeorm';
 import { PostgresErrorCode } from 'src/database/postgresErrorCodes.enum';
-import { PostNotFoundException } from './exception/postNotFound.exception';
+import { PostNotFoundException } from './exceptions/postNotFound.exception';
 import { Order } from 'src/shared/dto/sort-order-param.dto';
 
 @Injectable()
