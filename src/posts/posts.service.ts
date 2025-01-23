@@ -7,6 +7,7 @@ import { Repository } from 'typeorm';
 import { PostgresErrorCode } from 'src/database/postgresErrorCodes.enum';
 import { PostNotFoundException } from './exceptions/postNotFound.exception';
 import { Order } from 'src/shared/dto/sort-order-param.dto';
+import { InternalServerException } from 'src/shared/exceptions/internalError.exception';
 
 @Injectable()
 export class PostsService {
@@ -25,7 +26,7 @@ export class PostsService {
       if (error?.code === PostgresErrorCode.UniqueViolation) {
         throw new HttpException('Post with this path already exists', 400);
       }
-      throw new HttpException('Something went wrong', 500);
+      throw new InternalServerException();
     }
   }
 
@@ -63,7 +64,7 @@ export class PostsService {
       return { items, count };
     }
 
-    throw new HttpException('Posts not found', 404);
+    throw new PostNotFoundException();
   }
 
   async getPost(path: string) {
@@ -90,7 +91,7 @@ export class PostsService {
       return post;
     }
 
-    throw new HttpException('Post not found', 404);
+    throw new PostNotFoundException(path);
   }
 
   async updatePost(id: string, updatePostDto: UpdatePostDto) {
@@ -99,7 +100,7 @@ export class PostsService {
     });
 
     if (!post) {
-      throw new HttpException('Post not found', 404);
+      throw new PostNotFoundException(id);
     }
 
     try {
@@ -111,7 +112,7 @@ export class PostsService {
       if (error?.code === PostgresErrorCode.UniqueViolation) {
         throw new PostNotFoundException(id);
       }
-      throw new HttpException('Something went wrong', 500);
+      throw new InternalServerException();
     }
   }
 
@@ -119,7 +120,7 @@ export class PostsService {
     const deleteResponse = await this.postRepository.delete(id);
 
     if (!deleteResponse.affected) {
-      throw new HttpException('Post not found', 404);
+      throw new PostNotFoundException(id);
     }
   }
 }

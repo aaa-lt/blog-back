@@ -6,6 +6,7 @@ import Series from './entities/series.entity';
 import { Repository } from 'typeorm';
 import { PostgresErrorCode } from 'src/database/postgresErrorCodes.enum';
 import { SeriesNotFoundException } from './exception/seriesNotFound.exception';
+import { InternalServerException } from 'src/shared/exceptions/internalError.exception';
 
 @Injectable()
 export class SeriesService {
@@ -24,7 +25,7 @@ export class SeriesService {
       if (error?.code === PostgresErrorCode.UniqueViolation) {
         throw new HttpException('Series with this title already exists', 400);
       }
-      throw new HttpException('Something went wrong', 500);
+      throw new InternalServerException();
     }
   }
 
@@ -46,7 +47,7 @@ export class SeriesService {
       return { items, count };
     }
 
-    throw new HttpException('Series not found', 404);
+    throw new SeriesNotFoundException();
   }
 
   async getSeries(path: string) {
@@ -60,7 +61,7 @@ export class SeriesService {
       return series;
     }
 
-    throw new HttpException('Series not found', 404);
+    throw new SeriesNotFoundException(path);
   }
 
   async updateSeries(id: string, updateSeriesDto: UpdateSeriesDto) {
@@ -69,7 +70,7 @@ export class SeriesService {
     });
 
     if (!post) {
-      throw new HttpException('Post not found', 404);
+      throw new SeriesNotFoundException(id);
     }
 
     try {
@@ -81,7 +82,7 @@ export class SeriesService {
       if (error?.code === PostgresErrorCode.UniqueViolation) {
         throw new SeriesNotFoundException(id);
       }
-      throw new HttpException('Something went wrong', 500);
+      throw new InternalServerException();
     }
   }
 
@@ -89,7 +90,7 @@ export class SeriesService {
     const deleteResponse = await this.seriesRepository.delete(id);
 
     if (!deleteResponse.affected) {
-      throw new HttpException('Series not found', 404);
+      throw new SeriesNotFoundException(id);
     }
   }
 }

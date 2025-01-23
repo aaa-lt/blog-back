@@ -1,9 +1,10 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import User from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { hash, compare } from 'bcryptjs';
+import { UserNotFoundException } from './exceptions/userNotFound.exception';
 
 @Injectable()
 export class UsersService {
@@ -28,7 +29,7 @@ export class UsersService {
       return user;
     }
 
-    throw new HttpException('User not found', 404);
+    throw new UserNotFoundException();
   }
 
   async getById(id: string) {
@@ -40,7 +41,7 @@ export class UsersService {
       return user;
     }
 
-    throw new HttpException('User not found', 404);
+    throw new UserNotFoundException();
   }
 
   async setCurrentRefreshToken(refreshToken: string, userId: string) {

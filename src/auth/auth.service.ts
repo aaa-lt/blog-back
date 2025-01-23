@@ -7,6 +7,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { TokenPayload } from './interfaces/tokenPayload.interface';
 import { InvalidCredentialsException } from './exeptions/invalidCredentials.exeption';
+import { InternalServerException } from 'src/shared/exceptions/internalError.exception';
 
 @Injectable()
 export class AuthService {
@@ -30,7 +31,7 @@ export class AuthService {
       if (error?.code === PostgresErrorCode.UniqueViolation) {
         throw new HttpException('User already exists', 409);
       }
-      throw new HttpException('Something went wrong', 500);
+      throw new InternalServerException();
     }
   }
 
