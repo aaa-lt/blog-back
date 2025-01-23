@@ -3,6 +3,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import User from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { hash, compare } from 'bcryptjs';
 
 @Injectable()
 export class UsersService {
@@ -40,6 +41,34 @@ export class UsersService {
     }
 
     throw new HttpException('User not found', 404);
+  }
+
+  async setCurrentRefreshToken(refreshToken: string, userId: string) {
+    const hashedToken = await hash(refreshToken, 10);
+
+    await this.userRepository.update(userId, {
+      currentRefreshToken: hashedToken,
+    });
+  }
+
+  async removeCurrentRefreshToken(userId: string) {
+    await this.userRepository.update(userId, {
+      currentRefreshToken: null,
+    });
+  }
+
+  async getUserIfRefreshTokenMatches(refreshToken: string, userId: string) {
+    const user = await this.getById(userId);
+
+    if (user.currentRefreshToken) {
+      const isMatch = await compare(refreshToken, user.currentRefreshToken);
+
+      if (isMatch) {
+        return user;
+      }
+    }
+
+    return;
   }
 
   // TODO

@@ -12,7 +12,14 @@ async function bootstrap() {
   const swaggerConfig = new DocumentBuilder()
     .setTitle('Blog API')
     .setVersion('1.0')
+    .addCookieAuth('Authentication', {
+      type: 'http',
+      in: 'Header',
+      scheme: 'Bearer',
+    })
+    .addBearerAuth()
     .build();
+
   const document = SwaggerModule.createDocument(app, swaggerConfig);
 
   SwaggerModule.setup('api', app, document);

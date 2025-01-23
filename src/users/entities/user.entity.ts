@@ -15,6 +15,10 @@ class User {
   @Exclude()
   @Column()
   public password: string;
+
+  @Exclude()
+  @Column({ type: 'text', nullable: true })
+  public currentRefreshToken?: string | null;
 }
 
 export default User;
