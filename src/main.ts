@@ -3,10 +3,10 @@ import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import * as cookieParser from 'cookie-parser';
+import { SwaggerTheme, SwaggerThemeNameEnum } from 'swagger-themes';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  console.log(cookieParser);
   app.use(cookieParser());
 
   const swaggerConfig = new DocumentBuilder()
@@ -21,8 +21,13 @@ async function bootstrap() {
     .build();
 
   const document = SwaggerModule.createDocument(app, swaggerConfig);
+  const theme = new SwaggerTheme();
+  const options = {
+    explorer: true,
+    customCss: theme.getBuffer(SwaggerThemeNameEnum.ONE_DARK),
+  };
 
-  SwaggerModule.setup('api', app, document);
+  SwaggerModule.setup('api', app, document, options);
 
   app.enableCors();
 

@@ -7,6 +7,6 @@ export enum Order {
 
 export class OrderSortParamDto {
   @IsOptional()
-  @IsEnum(['ASC', 'DESC'])
+  @IsEnum(Order)
   order?: Order;
 }
