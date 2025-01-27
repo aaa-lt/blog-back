@@ -40,8 +40,11 @@ class Post {
   @Column({ unique: true })
   public path: string;
 
-  @ManyToOne(() => Series, (series) => series.posts)
-  public series: Series;
+  @ManyToOne(() => Series, (series) => series.posts, {
+    nullable: true,
+    onDelete: 'SET NULL',
+  })
+  public series: Series | null;
 }
 
 export default Post;

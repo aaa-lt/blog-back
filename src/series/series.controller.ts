@@ -9,6 +9,7 @@ import {
   Query,
   UseInterceptors,
   ClassSerializerInterceptor,
+  UseGuards,
 } from '@nestjs/common';
 import { SeriesService } from './series.service';
 import { CreateSeriesDto } from './dto/create-series.dto';
@@ -16,6 +17,8 @@ import { UpdateSeriesDto } from './dto/update-series.dto';
 import { PaginationParamsDto } from 'src/shared/dto/pagination-params.dto';
 import { FindOneByUuidDto } from 'src/shared/dto/find-one-by-uuid.dto';
 import { ExcludeNullInterceptor } from 'src/utils/excludeNull.interceptor';
+import { JwtAuthGuard } from 'src/auth/guards/jwtAuth.guard';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('series')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -24,6 +27,8 @@ export class SeriesController {
   constructor(private readonly seriesService: SeriesService) {}
 
   @Post()
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   create(@Body() createSeriesDto: CreateSeriesDto) {
     return this.seriesService.createSeries(createSeriesDto);
   }
@@ -40,6 +45,8 @@ export class SeriesController {
   }
 
   @Patch(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   update(
     @Param() { id }: FindOneByUuidDto,
     @Body() updateSeriesDto: UpdateSeriesDto,
@@ -48,6 +55,8 @@ export class SeriesController {
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   remove(@Param() { id }: FindOneByUuidDto) {
     return this.seriesService.removeSeries(id);
   }

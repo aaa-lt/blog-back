@@ -67,7 +67,7 @@ export class PostsService {
     throw new PostNotFoundException();
   }
 
-  async getPost(path: string) {
+  async getPostByPath(path: string) {
     const post = await this.postRepository.findOne({
       where: { path, published: true },
       relations: ['series'],
@@ -94,10 +94,68 @@ export class PostsService {
     throw new PostNotFoundException(path);
   }
 
+  async getPostById(id: string) {
+    const post = await this.postRepository.findOne({
+      where: { id },
+      relations: ['series'],
+      select: {
+        id: true,
+        title: true,
+        content: true,
+        imageUrl: true,
+        path: true,
+        seriesPostId: true,
+        createdAt: true,
+        series: {
+          id: true,
+          title: true,
+          path: true,
+        },
+      },
+    });
+
+    if (post) {
+      return post;
+    }
+
+    throw new PostNotFoundException(id);
+  }
+
+  async getDraftPosts(limit: number, offset?: number) {
+    const [items, count] = await this.postRepository.findAndCount({
+      where: { published: false },
+      relations: ['series'],
+      select: {
+        id: true,
+        title: true,
+        previewContent: true,
+        imageUrl: true,
+        path: true,
+        seriesPostId: true,
+        createdAt: true,
+        series: {
+          id: true,
+          title: true,
+          path: true,
+        },
+      },
+      take: limit,
+      skip: offset,
+    });
+
+    if (items) {
+      return { items, count };
+    }
+
+    throw new PostNotFoundException();
+  }
+
   async updatePost(id: string, updatePostDto: UpdatePostDto) {
     const post = await this.postRepository.findOne({
       where: { id },
     });
+
+    console.log(post);
 
     if (!post) {
       throw new PostNotFoundException(id);
