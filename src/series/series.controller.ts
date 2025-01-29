@@ -41,7 +41,7 @@ export class SeriesController {
   @Get(':path')
   async findOne(@Param('path') path: string) {
     const series = await this.seriesService.getSeries(path);
-    return { series };
+    return series;
   }
 
   @Patch(':id')

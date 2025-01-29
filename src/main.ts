@@ -1,12 +1,21 @@
 import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
+import {
+  ClassSerializerInterceptor,
+  ConsoleLogger,
+  Logger,
+  ValidationPipe,
+} from '@nestjs/common';
 import * as cookieParser from 'cookie-parser';
 import { SwaggerTheme, SwaggerThemeNameEnum } from 'swagger-themes';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    logger: new ConsoleLogger('verbose', {
+      logLevels: ['verbose', 'debug', 'error', 'fatal', 'log', 'warn'],
+    }),
+  });
   app.use(cookieParser());
 
   const swaggerConfig = new DocumentBuilder()
@@ -37,5 +46,7 @@ async function bootstrap() {
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
 
   await app.listen(process.env['PORT'] ?? 3000);
+
+  Logger.log(`Server running on port ${process.env['PORT'] ?? 3000}`);
 }
 bootstrap();
