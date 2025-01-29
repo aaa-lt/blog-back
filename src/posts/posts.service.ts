@@ -33,7 +33,7 @@ export class PostsService {
   async getAllPosts(
     limit: number,
     offset?: number,
-    order?: Order,
+    order: Order = Order.ASC,
     seriesPath?: string,
   ) {
     const [items, count] = await this.postRepository.findAndCount({
@@ -56,6 +56,7 @@ export class PostsService {
       take: limit,
       skip: offset,
       order: {
+        ...(seriesPath && { seriesPostId: order }),
         createdAt: order,
       },
     });
