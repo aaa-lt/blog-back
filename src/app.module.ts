@@ -9,6 +9,7 @@ import * as Joi from '@hapi/joi';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'node:path';
 import { LoggingMiddleware } from './shared/middleware/logging.middleware';
+import { AdminModule } from './admin/admin.module';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { LoggingMiddleware } from './shared/middleware/logging.middleware';
         index: false,
       },
     }),
+    AdminModule,
   ],
 })
 export class AppModule implements NestModule {
