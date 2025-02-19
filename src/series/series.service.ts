@@ -7,6 +7,7 @@ import { Repository } from 'typeorm';
 import { PostgresErrorCode } from 'src/database/postgresErrorCodes.enum';
 import { SeriesNotFoundException } from './exception/seriesNotFound.exception';
 import { InternalServerException } from 'src/shared/exceptions/internalError.exception';
+import { paginate, PaginateConfig, PaginateQuery } from 'nestjs-paginate';
 
 @Injectable()
 export class SeriesService {
@@ -29,25 +30,8 @@ export class SeriesService {
     }
   }
 
-  async getAllSeries(offset?: number, limit?: number) {
-    const [items, count] = await this.seriesRepository.findAndCount({
-      select: {
-        title: true,
-        path: true,
-        createdAt: true,
-      },
-      order: {
-        createdAt: 'DESC',
-      },
-      take: limit,
-      skip: offset,
-    });
-
-    if (items) {
-      return { items, count };
-    }
-
-    throw new SeriesNotFoundException();
+  async getAllSeries(query: PaginateQuery, cfg: PaginateConfig<Series>) {
+    return await paginate(query, this.seriesRepository, cfg);
   }
 
   async getSeries(path: string) {

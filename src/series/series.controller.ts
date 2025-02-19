@@ -6,7 +6,6 @@ import {
   Patch,
   Param,
   Delete,
-  Query,
   UseInterceptors,
   ClassSerializerInterceptor,
   UseGuards,
@@ -14,11 +13,13 @@ import {
 import { SeriesService } from './series.service';
 import { CreateSeriesDto } from './dto/create-series.dto';
 import { UpdateSeriesDto } from './dto/update-series.dto';
-import { PaginationParamsDto } from 'src/shared/dto/pagination-params.dto';
 import { FindOneByUuidDto } from 'src/shared/dto/find-one-by-uuid.dto';
 import { ExcludeNullInterceptor } from 'src/utils/excludeNull.interceptor';
 import { JwtAuthGuard } from 'src/auth/guards/jwtAuth.guard';
 import { ApiBearerAuth } from '@nestjs/swagger';
+import { Paginate, PaginatedSwaggerDocs, PaginateQuery } from 'nestjs-paginate';
+import { publicSeriesConfig } from './paginateCfg/config';
+import Series from './entities/series.entity';
 
 @Controller('series')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -34,8 +35,9 @@ export class SeriesController {
   }
 
   @Get()
-  findAll(@Query() { offset, limit }: PaginationParamsDto) {
-    return this.seriesService.getAllSeries(offset, limit);
+  @PaginatedSwaggerDocs(Series, publicSeriesConfig)
+  findAll(@Paginate() query: PaginateQuery) {
+    return this.seriesService.getAllSeries(query, publicSeriesConfig);
   }
 
   @Get(':path')

@@ -21,7 +21,7 @@ import { FindOneByUuidDto } from 'src/shared/dto/find-one-by-uuid.dto';
 import { UpdatePostDto } from 'src/posts/dto/update-post.dto';
 import { PostsService } from 'src/posts/posts.service';
 import { PaginatedSwaggerDocs, PaginateQuery } from 'nestjs-paginate';
-import { adminPostConfig } from 'src/shared/paginateCfg/post.config';
+import { adminPostConfig } from 'src/posts/paginateCfg/config';
 
 @Controller('admin')
 @UseInterceptors(ClassSerializerInterceptor)

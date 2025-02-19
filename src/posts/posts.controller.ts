@@ -8,8 +8,8 @@ import {
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { ExcludeNullInterceptor } from 'src/utils/excludeNull.interceptor';
-import { PaginatedSwaggerDocs, PaginateQuery } from 'nestjs-paginate';
-import { publicPostConfig } from 'src/shared/paginateCfg/post.config';
+import { Paginate, PaginatedSwaggerDocs, PaginateQuery } from 'nestjs-paginate';
+import { publicPostConfig } from 'src/posts/paginateCfg/config';
 import Post from './entities/post.entity';
 
 @Controller('posts')
@@ -20,8 +20,17 @@ export class PostsController {
 
   @Get()
   @PaginatedSwaggerDocs(Post, publicPostConfig)
-  async getPosts(@Query() query: PaginateQuery) {
-    return await this.postsService.getAllPosts(query, publicPostConfig);
+  async getPosts(
+    @Paginate() query: PaginateQuery,
+    @Query('seriesPath') seriesPath?: string,
+  ) {
+    return await this.postsService.getAllPosts(query, {
+      ...publicPostConfig,
+      where: {
+        ...publicPostConfig.where,
+        ...(seriesPath && { series: { path: seriesPath } }),
+      },
+    });
   }
 
   @Get(':path')
