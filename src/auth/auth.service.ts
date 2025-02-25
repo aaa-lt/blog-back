@@ -1,13 +1,10 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
-import { RegisterDto } from './dto/register.dto';
-import { PostgresErrorCode } from 'src/database/postgresErrorCodes.enum';
-import { compare, hash } from 'bcryptjs';
+import { compare } from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { TokenPayload } from './interfaces/tokenPayload.interface';
 import { InvalidCredentialsException } from './exeptions/invalidCredentials.exeption';
-import { InternalServerException } from 'src/shared/exceptions/internalError.exception';
 
 @Injectable()
 export class AuthService {
@@ -16,24 +13,6 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
   ) {}
-
-  public async register(data: RegisterDto) {
-    const hashPass = await hash(data.password, 10);
-
-    try {
-      const newUser = await this.usersService.create({
-        ...data,
-        password: hashPass,
-      });
-
-      return newUser;
-    } catch (error) {
-      if (error?.code === PostgresErrorCode.UniqueViolation) {
-        throw new HttpException('User already exists', 409);
-      }
-      throw new InternalServerException();
-    }
-  }
 
   public async getAuthedUser(email: string, password: string) {
     try {

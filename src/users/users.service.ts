@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { hash, compare } from 'bcryptjs';
 import { UserNotFoundException } from './exceptions/userNotFound.exception';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -44,6 +45,10 @@ export class UsersService {
     throw new UserNotFoundException();
   }
 
+  async getAllUsers() {
+    return await this.userRepository.find();
+  }
+
   async setCurrentRefreshToken(refreshToken: string, userId: string) {
     const hashedToken = await hash(refreshToken, 10);
 
@@ -72,13 +77,25 @@ export class UsersService {
     return;
   }
 
-  // TODO
-  // async update(id: string, updateUserDto: UpdateUserDto) {
-  //   console.log(updateUserDto);
-  //   return `This action updates a #${id} user`;
-  // }
+  async updateUser(id: string, updateUserDto: UpdateUserDto) {
+    const user = await this.getById(id);
 
-  // async remove(id: string) {
-  //   return `This action removes a #${id} user`;
-  // }
+    if (user) {
+      await this.userRepository.update(id, updateUserDto);
+      return await this.getById(id);
+    }
+
+    throw new UserNotFoundException();
+  }
+
+  async removeUser(id: string) {
+    const user = await this.getById(id);
+
+    if (user) {
+      await this.userRepository.delete(id);
+      return;
+    }
+
+    throw new UserNotFoundException();
+  }
 }

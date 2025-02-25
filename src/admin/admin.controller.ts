@@ -1,3 +1,4 @@
+import { AuthService } from 'src/auth/auth.service';
 import PostEntity from 'src/posts/entities/post.entity';
 import {
   Controller,
@@ -11,6 +12,7 @@ import {
   UseInterceptors,
   ClassSerializerInterceptor,
   UseGuards,
+  Res,
 } from '@nestjs/common';
 import { JwtAuthGuard } from 'src/auth/guards/jwtAuth.guard';
 import { ApiBearerAuth } from '@nestjs/swagger';
@@ -22,6 +24,10 @@ import { UpdatePostDto } from 'src/posts/dto/update-post.dto';
 import { PostsService } from 'src/posts/posts.service';
 import { PaginatedSwaggerDocs, PaginateQuery } from 'nestjs-paginate';
 import { adminPostConfig } from 'src/posts/paginateCfg/config';
+import { RegisterDto } from 'src/auth/dto/register.dto';
+import { Response } from 'express';
+import { UsersService } from 'src/users/users.service';
+import { UpdateDto } from 'src/auth/dto/update.dto';
 
 @Controller('admin')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -30,7 +36,50 @@ export class AdminController {
   constructor(
     private readonly adminSerivce: AdminService,
     private readonly postsSerivce: PostsService,
+    private readonly authService: AuthService,
+    private readonly usersService: UsersService,
   ) {}
+
+  @Get('users')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  async getAllUsers() {
+    return this.usersService.getAllUsers();
+  }
+
+  @Post('users/register')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  async register(
+    @Body() data: RegisterDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const user = await this.adminSerivce.register(data);
+
+    const accessToken = this.authService.getAccessToken(user.id);
+    const refreshToken = this.authService.getRefreshToken(user.id);
+
+    res.setHeader(
+      'Set-Cookie',
+      this.authService.getCookieWithRefreshToken(refreshToken),
+    );
+
+    return { user, accessToken };
+  }
+
+  @Patch('users/:id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  async updateUser(@Query('id') id: string, @Body() data: UpdateDto) {
+    return this.usersService.updateUser(id, data);
+  }
+
+  @Delete('users/:id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  async removeUser(@Query('id') id: string) {
+    return this.usersService.removeUser(id);
+  }
 
   @Post('posts')
   @UseGuards(JwtAuthGuard)
